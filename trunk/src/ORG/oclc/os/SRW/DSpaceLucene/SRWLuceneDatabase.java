@@ -43,12 +43,13 @@ import org.apache.axis.types.NonNegativeInteger;
 import org.apache.axis.types.PositiveInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dspace.browse.Browse;
+import org.dspace.browse.BrowseEngine;
+import org.dspace.browse.BrowseException;
+import org.dspace.browse.BrowseIndex;
 import org.dspace.browse.BrowseInfo;
-import org.dspace.browse.BrowseScope;
+import org.dspace.browse.BrowserScope;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
-import org.dspace.content.Item;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.search.QueryArgs;
@@ -221,7 +222,17 @@ public class SRWLuceneDatabase extends SRWDatabase {
     public TermList getTermList(CQLTermNode ctn, int position, int maxTerms,
       ScanRequestType scanRequestType) {
         TermList tl=new TermList();
-        if(log.isDebugEnabled())log.debug("entering SRWLuceneDatabase.doScanRequest");
+        if(log.isDebugEnabled()) {
+            log.debug("entering SRWLuceneDatabase.doScanRequest");
+            try {
+                BrowseIndex[] indices = BrowseIndex.getBrowseIndices();
+                log.debug(indices.length+" indices available");
+                for(int i=0; i<indices.length; i++)
+                    log.debug(indices[i]);
+            } catch (BrowseException ex) {
+                log.error(ex, ex);
+            }
+        }
         Context dspaceContext=null;
         int collectionID=0, communityID=0;
         MessageContext msgContext=MessageContext.getCurrentContext();
@@ -231,7 +242,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
         try {
             dspaceContext=new Context();
             if(log.isDebugEnabled())log.debug("dspaceContext.isValid()="+dspaceContext.isValid());
-            BrowseScope scope = new BrowseScope(dspaceContext);
+            BrowserScope scope = new BrowserScope(dspaceContext);
             String pathInfo=((HttpServletRequest)msgContext.getProperty(org.apache.axis.transport.http.HTTPConstants.MC_HTTP_SERVLETREQUEST)).getPathInfo();
             if(log.isDebugEnabled())log.debug("pathInfo="+pathInfo);
             int i;
@@ -241,39 +252,29 @@ public class SRWLuceneDatabase extends SRWDatabase {
                 communityID=Integer.parseInt(pathInfo.substring(i+9));
             if(collectionID!=0) {
                 if(log.isDebugEnabled())log.debug("Got a request for collection "+collectionID);
-                scope.setScope(Collection.find(dspaceContext, collectionID));
+                scope.setCollection(Collection.find(dspaceContext, collectionID));
             }
             else
                 if(communityID!=0) {
                     if(log.isDebugEnabled())log.debug("Got a request for community "+communityID);
-                    scope.setScope(Community.find(dspaceContext, communityID));
-                }
-                else {
-                    if(log.isDebugEnabled())log.debug("Got a request for all collections");
-                    scope.setScopeAll();
+                    scope.setCommunity(Community.find(dspaceContext, communityID));
                 }
 
-            scope.setTotal(maxTerms);
-            scope.setNumberBefore(position-1);
+            scope.setResultsPerPage(maxTerms);
+            scope.setOffset(position-1);
             String index=ctn.getQualifier(),
                    newIndex=(String)indexSynonyms.get(index);
             if(newIndex!=null)
                 index=newIndex;
-            scope.setFocus(ctn.getTerm());
+            BrowseIndex bIndex=BrowseIndex.getBrowseIndex(index);
+            scope.setBrowseIndex(bIndex);
+            scope.setStartsWith(ctn.getTerm());
 
             BrowseInfo bi;
+            BrowseEngine browse=new BrowseEngine(dspaceContext);
             String[] result;
-            if(index.equals("author")) {
-                bi=Browse.getAuthors(scope);
-                result=bi.getStringResults();
-            }
-            else {
-                bi=Browse.getItemsByTitle(scope);
-                Item[] item=bi.getItemResults();
-                result=new String[item.length];
-                for(i=0; i<item.length; i++)
-                    result[i]=item[i].getDC("title", Item.ANY, Item.ANY)[0].value;
-            }
+            bi=browse.browse(scope);
+            result=bi.getStringResults();
             if(log.isDebugEnabled())log.debug(bi.getTotal()+" items found");
             List l=bi.getResults();
             if(log.isDebugEnabled())log.debug("results="+l);
@@ -295,6 +296,11 @@ public class SRWLuceneDatabase extends SRWDatabase {
             }
             tl.setTerms(term);
             dspaceContext.complete();
+        }
+        catch(BrowseException e) {
+            dspaceContext.abort();
+            log.error(e, e);
+            tl.addDiagnostic(SRWDiagnostic.GeneralSystemError, e.toString());
         }
         catch(SQLException e) {
             dspaceContext.abort();
