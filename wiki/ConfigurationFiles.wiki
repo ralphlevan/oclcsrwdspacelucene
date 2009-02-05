@@ -6,7 +6,7 @@ When the SRW server starts, it is passed a single startup parameter (PropertiesF
 The database configuration file that is provided for DSpace in the standard distribution is preconfigured and should need no changes. The information below is provided so that you can make changes as necessary. 
 
 
-Database Configuration Files
+==Database Configuration Files==
 SRW supports an Explain operation which returns an Explain record with information about the server and allows clients to determine the capabilities of the server. At a minimum, the Explain record will list the indexes that can be searched and the record schemas that records can be returned in. In addition, general descriptive information about the database is also available. 
 
 General database information is specified with the databaseInfo.title, databaseInfo.description, databaseInfo.author, databaseInfo.restrictions and databaseInfo.contact fields. None of these fields are required. 
@@ -14,66 +14,61 @@ General database information is specified with the databaseInfo.title, databaseI
 If you wish to support a thin client interface, you can specify individual stylesheets for Explain, Scan and Search. They are specified with the explainStyleSheet, scanStyleSheet and searchStyleSheet fields and should have the paths that the browser will use to fetch the sytlesheet. 
 
 
-General Configuration
+==General Configuration==
 The parameters in this area begin with "configInfo.". The parameters available for use are:
-
-configInfo.maximumRecords 
-configInfo.numberOfRecords 
-configInfo.defaultResultSetTTL 
-
+  configInfo.maximumRecords 
+  configInfo.numberOfRecords 
+  configInfo.defaultResultSetTTL 
 
 
-Index Mappings
+==Index Mappings==
 The Lucene indexes defined for DSpace can be searched using their internal names. As of this writing (2003/11/05) those indexes were: 
-author 
-title 
-keyword 
-location 
-handletext 
-abstract 
-series 
-mimetype 
-sponsor 
-identifier 
+  author 
+  title 
+  keyword 
+  location 
+  handletext 
+  abstract 
+  series 
+  mimetype 
+  sponsor 
+  identifier 
 An example of a CQL query using these internal names is: title exact "Men at Arms" which searches the title index for records whose title is exactly "Men at Arms". 
 
 Configuration information becomes necessary if those Lucene indexes need to be searched using different names. This is often necessary for interoperability purposes. Standard index names may be defined as part of some profile. For instance, instead of calling the index author, a profile might require that it also be called dc.creator. (Note: these are only name changes. This has nothing to do with the fields that are indexed to create the database index being searched.) So, besides the search author=pratchett, you might also support the search dc.creator=pratchett. The new index name is simply a synonym for the old index name. 
 
 To specify the mapping of the old index name to the new one, add a line to the configuration file of the form: 
-indexSynonym.<newName>=<oldName>
+indexSynonym.`<newName>`=`<oldName>`
 An example would be: 
-indexSynonym.dc.creator=author
+  indexSynonym.dc.creator=author
 Add a separate line for each index mapping. 
 
 
-Index List
+==Index List==
 The Explain service needs to provide a list of the supported indexes. That list is provided in the database configuration file. Because we wanted multiple communities to be able to specify their own sets of indexes, each index name is preceeded by a "context set" specification. So, an index name often looks something like "dc.title", instead of just "title", where "dc" then is the name of the context set.
 
 The context sets supported by your database must be specified in the database configuration file. The cql context set is mandatory and is specified by: 
 contextSet.cql=info:srw/cql-context-set/1/cql-v1.1
 The Dublin Core context set is highly recommended for all SRW/U servers and is specified by: 
-contextSet.dc=info:srw/cql-context-set/1/dc-v1.1
+  contextSet.dc=info:srw/cql-context-set/1/dc-v1.1
 In CQL (the Common Query Language used by SRW/U) indexes are called "qualifiers". So, to specifiy and index name in the configuration file, you put the word "qualifier", followed by a period and then the name of the context set followed by another period and then the name of the index. All of this is then followed by an equals-sign and then some stuff that is currently ignored. An example would be: 
-qualifier.dc.title=stuff
-Schema Mappings
+  qualifier.dc.title=stuff
+
+==Schema Mappings==
 The native internal format is a Dublin Core record. If the search request does not specify a recordSchema, then the record will be returned in that Dublin Core schema. If the server is to support other schemas (e.g. MARC-XML, MODS, ONIX), then a mapping to those schemas must be provided. The mapping mechanism uses XSLT. 
 
 To enable schema support, a list of the supported schemas must be provided in the database configuration file. This list consists of a single line that begins xmlSchemas= and is followed by a list of short names for the schemas to be supported. An example of an xmlSchemas list would be: 
-xmlSchemas=dc, marcxml
+  xmlSchemas=dc, marcxml
 Associated with each schema is the mechanism for producing the schema, the URI identifier for the schema, the URL location for the schema definition and a full name for the schema. 
 
 For DSpace, the internal format is Dublin Core, so the mechanism to produce Dublin Core is specified as "default". Any other transformation is accomplished through the use of an XSL transformation and the name of the .xsl file must be provided. A line should be provided that begins with the short schema name, followed by an equals-sign and the name of the XSLT file (or "default"). For example: 
-dc=default
-marcxml=DcToMarcXml.xsl
+  dc=default
+  marcxml=DcToMarcXml.xsl
 The SRW server assumes that the XSL file specification is the complete pathname of the file. If it isn't, then the server looks for that file, first in the db.home directory and then in the SRW.Home directory. 
 
 At present, there are no XSLT files for transforming DSpace Dublin Core records to other schemas. I'm hoping that the community will make them available. If this happens, I will be glad to incorporate them in this package and/or point at them from this document. 
 
 The identifier is specified on a line that begins with the short schema name, followed by ".identifier". Similarly, the location is specified by the short schema name followed by ".location" and the full name is specified by the short schema name followed by ".title". For example: 
-dc.identifier=info:srw/schema/1/dc-v1.1
-dc.location=http://www.loc.gov/zing/srw/dc-schema.xsd
-dc.title=dc: Dublin Core Elements
-Contact Information
-Any questions, comments, suggestions or opinions should be sent to Ralph LeVan (Ralph's Home Page.) 
-OCLC Research
-OCLC 
+  dc.identifier=info:srw/schema/1/dc-v1.1
+  dc.location=http://www.loc.gov/zing/srw/dc-schema.xsd
+  dc.title=dc: Dublin Core Elements
