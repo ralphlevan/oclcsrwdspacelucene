@@ -37,7 +37,7 @@ An example of a CQL query using these internal names is: title exact "Men at Arm
 Configuration information becomes necessary if those Lucene indexes need to be searched using different names. This is often necessary for interoperability purposes. Standard index names may be defined as part of some profile. For instance, instead of calling the index author, a profile might require that it also be called dc.creator. (Note: these are only name changes. This has nothing to do with the fields that are indexed to create the database index being searched.) So, besides the search author=pratchett, you might also support the search dc.creator=pratchett. The new index name is simply a synonym for the old index name. 
 
 To specify the mapping of the old index name to the new one, add a line to the configuration file of the form: 
-<ul><b>indexSynonym.&lt;newName>=&lt;oldName></b></ul>
+<ul><b>indexSynonym.<newName>=<oldName></b></ul>
 indexSynonym.`<newName>`=`<oldName>`
 An example would be: 
   indexSynonym.dc.creator=author
