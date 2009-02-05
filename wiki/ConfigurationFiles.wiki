@@ -66,7 +66,7 @@ To enable schema support, a list of the supported schemas must be provided in th
 Associated with each schema is the mechanism for producing the schema, the URI identifier for the schema, the URL location for the schema definition and a full name for the schema. 
 
 For DSpace, the internal format is Dublin Core, so the mechanism to produce Dublin Core is specified as "default". Any other transformation is accomplished through the use of an XSL transformation and the name of the .xsl file must be provided. A line should be provided that begins with the short schema name, followed by an equals-sign and the name of the XSLT file (or "default"). For example: 
-<ul><b><li>dc=default</li>
+<ul style="list-style-type:none"><b><li>dc=default</li>
 <li>marcxml=DcToMarcXml.xsl</li></b></ul>
 
 The SRW server assumes that the XSL file specification is the complete pathname of the file. If it isn't, then the server looks for that file, first in the db.home directory and then in the SRW.Home directory. 
@@ -74,6 +74,6 @@ The SRW server assumes that the XSL file specification is the complete pathname 
 At present, there are no XSLT files for transforming DSpace Dublin Core records to other schemas. I'm hoping that the community will make them available. If this happens, I will be glad to incorporate them in this package and/or point at them from this document. 
 
 The identifier is specified on a line that begins with the short schema name, followed by ".identifier". Similarly, the location is specified by the short schema name followed by ".location" and the full name is specified by the short schema name followed by ".title". For example: 
-<ul><b><li>dc.identifier=info:srw/schema/1/dc-v1.1</li>
+<ul style="list-style-type:none"><b><li>dc.identifier=info:srw/schema/1/dc-v1.1</li>
 <li>dc.location=http://www.loc.gov/zing/srw/dc-schema.xsd</li>
 <li>dc.title=dc: Dublin Core Elements</li></b></ul>
