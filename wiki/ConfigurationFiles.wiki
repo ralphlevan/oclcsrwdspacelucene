@@ -1,7 +1,7 @@
 #summary SRW/SRU DSpace Configuration
 
 =DSpace Configuration Instructions for the OCLC Research SRW Server=
-When the SRW server starts, it is passed a single startup parameter (PropertiesFile) from the web.xml file. This points to a configuration file for the SRW server. That configuration file in turn points to a separate configuration file for each database hosted by the server. (See http://code.google.com/p/oclcsrw/wiki/ConfigurationFiles for more information on the SRW Server Properties file.) This document describes the contents of the configuration file for a DSpace/Lucene database. 
+When the SRW server starts, it is passed a single startup parameter (`PropertiesFile`) from the web.xml file. This points to a configuration file for the SRW server. That configuration file in turn points to a separate configuration file for each database hosted by the server. (See http://code.google.com/p/oclcsrw/wiki/ConfigurationFiles for more information on the SRW Server Properties file.) This document describes the contents of the configuration file for a DSpace/Lucene database. 
 
 The database configuration file that is provided for DSpace in the standard distribution is preconfigured and should need no changes. The information below is provided so that you can make changes as necessary. 
 
