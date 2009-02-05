@@ -16,9 +16,9 @@ If you wish to support a thin client interface, you can specify individual style
 
 ==General Configuration==
 The parameters in this area begin with "configInfo.". The parameters available for use are:
-  *configInfo.maximumRecords
-  *configInfo.numberOfRecords
-  *configInfo.defaultResultSetTTL
+  * configInfo.maximumRecords
+  * configInfo.numberOfRecords
+  * configInfo.defaultResultSetTTL
 
 ==Index Mappings==
 The Lucene indexes defined for DSpace can be searched using their internal names. As of this writing (2003/11/05) those indexes were: 
