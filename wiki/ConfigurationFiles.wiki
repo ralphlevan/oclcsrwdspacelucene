@@ -67,7 +67,7 @@ Associated with each schema is the mechanism for producing the schema, the URI i
 
 For DSpace, the internal format is Dublin Core, so the mechanism to produce Dublin Core is specified as "default". Any other transformation is accomplished through the use of an XSL transformation and the name of the .xsl file must be provided. A line should be provided that begins with the short schema name, followed by an equals-sign and the name of the XSLT file (or "default"). For example: 
 <ul style="list-style-type:none"><b><li>dc=default</li>
-<li>marcxml=DcToMarcXml.xsl</li></b></ul>
+<li>marcxml=`DcToMarcXml.xsl`</li></b></ul>
 
 The SRW server assumes that the XSL file specification is the complete pathname of the file. If it isn't, then the server looks for that file, first in the db.home directory and then in the SRW.Home directory. 
 
