@@ -32,15 +32,15 @@ The Lucene indexes defined for DSpace can be searched using their internal names
   * mimetype
   * sponsor
   * identifier
-An example of a CQL query using these internal names is: title exact "Men at Arms" which searches the title index for records whose title is exactly "Men at Arms". 
+An example of a CQL query using these internal names is: *title exact "Men at Arms"* which searches the title index for records whose title is exactly "Men at Arms". 
 
-Configuration information becomes necessary if those Lucene indexes need to be searched using different names. This is often necessary for interoperability purposes. Standard index names may be defined as part of some profile. For instance, instead of calling the index author, a profile might require that it also be called dc.creator. (Note: these are only name changes. This has nothing to do with the fields that are indexed to create the database index being searched.) So, besides the search author=pratchett, you might also support the search dc.creator=pratchett. The new index name is simply a synonym for the old index name. 
+Configuration information becomes necessary if those Lucene indexes need to be searched using different names. This is often necessary for interoperability purposes. Standard index names may be defined as part of some profile. For instance, instead of calling the index *author*, a profile might require that it also be called *dc.creator*. (Note: these are only name changes. This has nothing to do with the fields that are indexed to create the database index being searched.) So, besides the search *author=pratchett*, you might also support the search *dc.creator=pratchett*. The new index name is simply a synonym for the old index name. 
 
 To specify the mapping of the old index name to the new one, add a line to the configuration file of the form: 
 <ul><b>indexSynonym.`<newName>`=`<oldName>`</b></ul>
-indexSynonym.`<newName>`=`<oldName>`
+  *indexSynonym.`<newName>`=`<oldName>`*
 An example would be: 
-  indexSynonym.dc.creator=author
+  *indexSynonym.dc.creator=author*
 Add a separate line for each index mapping. 
 
 
