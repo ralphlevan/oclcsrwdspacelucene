@@ -27,7 +27,6 @@ import ORG.oclc.os.SRW.SRWDiagnostic;
 import ORG.oclc.os.SRW.TermList;
 import gov.loc.www.zing.srw.TermTypeWhereInList;
 import gov.loc.www.zing.srw.ScanRequestType;
-import gov.loc.www.zing.srw.ScanResponseType;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import gov.loc.www.zing.srw.TermType;
 import gov.loc.www.zing.srw.TermsType;
@@ -225,8 +224,6 @@ public class SRWLuceneDatabase extends SRWDatabase {
         Context dspaceContext=null;
         int collectionID=0, communityID=0;
         MessageContext msgContext=MessageContext.getCurrentContext();
-        ScanResponseType response=new ScanResponseType();
-        String         myHandle;
 
         try {
             dspaceContext=new Context();
@@ -306,7 +303,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
 
 
     public void init(String dbname, String srwHome, String dbHome,
-      String dbPropertiesFileName, Properties dbProperties) {
+      String dbPropertiesFileName, Properties dbProperties, HttpServletRequest req) {
         if(log.isDebugEnabled())log.debug("entering SRWLuceneDatabase.init, dbname="+dbname);
         super.initDB(dbname, srwHome, dbHome, dbPropertiesFileName, dbProperties);
         System.setProperty("dspace.configuration", dbHome+"config/dspace.cfg");
