@@ -24,9 +24,9 @@ databaseInfo.contact=<put some name here>
 
 #configInfo.maximumRecords=20
 
-#explainStyleSheet=/SRW/explainResponse.xsl
-#scanStyleSheet=/SRW/scanResponse.xsl
-#searchStyleSheet=/SRW/searchRetrieveResponse.xsl
+explainStyleSheet=/SRW/explainResponse.xsl
+scanStyleSheet=/SRW/scanResponse.xsl
+searchStyleSheet=/SRW/searchRetrieveResponse.xsl
 
 contextSet.cql=info:srw/cql-context-set/1/cql-v1.1
 contextSet.dc=info:srw/cql-context-set/1/dc-v1.1
