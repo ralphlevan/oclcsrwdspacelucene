@@ -20,7 +20,7 @@ dc.title=dc: Dublin Core Elements
 
 databaseInfo.title=DSpace Database
 databaseInfo.description=Records stored in our local DSpace Repository
-databaseInfo.contact=<put some name here>
+databaseInfo.contact=!!put some name here!!
 
 #configInfo.maximumRecords=20
 
