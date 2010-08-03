@@ -27,7 +27,6 @@ import ORG.oclc.os.SRW.SRWDiagnostic;
 import ORG.oclc.os.SRW.TermList;
 import gov.loc.www.zing.srw.TermTypeWhereInList;
 import gov.loc.www.zing.srw.ScanRequestType;
-import gov.loc.www.zing.srw.ScanResponseType;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import gov.loc.www.zing.srw.TermType;
 import gov.loc.www.zing.srw.TermsType;
@@ -53,7 +52,6 @@ import org.dspace.content.Community;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.search.QueryArgs;
-import org.dspace.search.QueryResults;
 import org.z3950.zing.cql.CQLAndNode;
 import org.z3950.zing.cql.CQLBooleanNode;
 import org.z3950.zing.cql.CQLNode;
@@ -163,7 +161,6 @@ public class SRWLuceneDatabase extends SRWDatabase {
         if(log.isDebugEnabled())log.debug("entering SRWLuceneDatabase.doSearchRequest");
         int            collectionID=0, communityID=0;
         MessageContext msgContext=MessageContext.getCurrentContext();
-        QueryResults   result;
 
         try {
             String pathInfo=((HttpServletRequest)msgContext.getProperty(org.apache.axis.transport.http.HTTPConstants.MC_HTTP_SERVLETREQUEST)).getPathInfo();
@@ -212,6 +209,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
             return new LuceneQueryResult(qArgs);
         }
         catch(Exception e) {
+            log.error(e, e);
             LuceneQueryResult lqr=new LuceneQueryResult();
             lqr.addDiagnostic(SRWDiagnostic.GeneralSystemError, e.getMessage());
             return lqr;
@@ -236,8 +234,6 @@ public class SRWLuceneDatabase extends SRWDatabase {
         Context dspaceContext=null;
         int collectionID=0, communityID=0;
         MessageContext msgContext=MessageContext.getCurrentContext();
-        ScanResponseType response=new ScanResponseType();
-        String         myHandle;
 
         try {
             dspaceContext=new Context();
@@ -262,7 +258,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
 
             scope.setResultsPerPage(maxTerms);
             scope.setOffset(position-1);
-            String index=ctn.getQualifier(),
+            String index=ctn.getIndex(),
                    newIndex=(String)indexSynonyms.get(index);
             if(newIndex!=null)
                 index=newIndex;
@@ -312,11 +308,12 @@ public class SRWLuceneDatabase extends SRWDatabase {
 
 
     public void init(String dbname, String srwHome, String dbHome,
-      String dbPropertiesFileName, Properties dbProperties) {
+      String dbPropertiesFileName, Properties dbProperties, HttpServletRequest req) {
         if(log.isDebugEnabled())log.debug("entering SRWLuceneDatabase.init, dbname="+dbname);
         super.initDB(dbname, srwHome, dbHome, dbPropertiesFileName, dbProperties);
         System.setProperty("dspace.configuration", dbHome+"config/dspace.cfg");
         String configProperty = System.getProperty("dspace.configuration");
+        log.debug("configProperty="+configProperty);
         if(configProperty!=null) {
             luceneDirectory=ConfigurationManager.getProperty("search.dir");
             if(log.isDebugEnabled())log.debug("lucene directory="+luceneDirectory);
@@ -353,7 +350,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
         }
         else if(node instanceof CQLTermNode) {
             CQLTermNode ctn=(CQLTermNode)node;
-            String index=ctn.getQualifier(),
+            String index=ctn.getIndex(),
                    newIndex=(String)indexSynonyms.get(index);
             if(newIndex!=null)
                 index=newIndex;
@@ -409,7 +406,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
         }
         else if(node instanceof CQLTermNode) {
             CQLTermNode ctn=(CQLTermNode)node;
-            if(log.isDebugEnabled())log.debug("term(qualifier=\""+ctn.getQualifier()+"\" relation=\""+
+            if(log.isDebugEnabled())log.debug("term(qualifier=\""+ctn.getIndex()+"\" relation=\""+
                 ctn.getRelation().getBase()+"\" term=\""+ctn.getTerm()+"\")");
         }
         else if(log.isDebugEnabled())log.debug("UnknownCQLNode("+node+")");
