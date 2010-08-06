@@ -1,0 +1,19 @@
+#summary How to turn on SRW/U debugging in the DSpace environment.
+
+= Introduction =
+
+Normally, a webapp can define its own debugging environment.  That's what I do for SRW.  In the SRW/WEB-INF/classes directory is a log4.properties file that defines the logging characteristics for the service.  Unfortunately, when I create a DSpace Context object to communicate with the DSpace framework, it re-initializes the log4j environment using the DSpace log4j.properties file and turns off all my traces.
+
+
+= Details =
+
+Add the following lines to your dspace/config/log4j.properties file:
+{{{
+log4j.appender.SRW=org.apache.log4j.ConsoleAppender
+log4j.appender.SRW.layout=org.apache.log4j.PatternLayout
+log4j.appender.SRW.layout.ConversionPattern=%-4r *[%t]* %-5p %c %x - %m%n
+#log4j.logger.ORG.oclc.os.SRW=DEBUG, SRW
+log4j.logger.ORG.oclc.os.SRW.SRWServlet=INFO, SRW
+log4j.logger.ORG.oclc.os.SRW.SRWDatabase=INFO, SRW
+}}}
+The SRW log4j.properties file normally directs its traces to the Tomcat console log.  DSpace sends its traces to its own files and does not use the console log.  So, I've defined a connection to the console log and routed the SRW traces to it.  That results in all the SRW traces being sent to the console log.
