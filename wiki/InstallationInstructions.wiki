@@ -64,8 +64,6 @@ vi /var/lib/tomcat6/webapps/SRW/WEB-INF/classes/SRWServer.props
 cp conf/DSpace.SRWDatabase.props /dspace/config
 }}}
 
-vi /dspace/config/DSpace.SRWDatabase.props
-
 ==Step 4: Bounce your tomcat and test your DSpace database==
 {{{
 sudo /etc/init.d/tomcat6 restart
