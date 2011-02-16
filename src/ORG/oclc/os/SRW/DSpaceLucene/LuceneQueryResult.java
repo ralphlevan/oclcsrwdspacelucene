@@ -23,6 +23,7 @@ import ORG.oclc.os.SRW.QueryResult;
 import ORG.oclc.os.SRW.RecordIterator;
 import gov.loc.www.zing.srw.ExtraDataType;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -43,6 +44,7 @@ public class LuceneQueryResult extends QueryResult {
     static Log log=LogFactory.getLog(LuceneQueryResult.class);
 
     public Item[] resultItems;
+    Context dspaceContext=null;
     QueryArgs qArgs;
     QueryResults result=null;
 
@@ -51,7 +53,6 @@ public class LuceneQueryResult extends QueryResult {
     
     public LuceneQueryResult(QueryArgs qArgs) throws InstantiationException {
         this.qArgs=qArgs;
-        Context dspaceContext=null;
         try {
             dspaceContext=new Context();
             if(log.isDebugEnabled()) {
@@ -104,7 +105,6 @@ public class LuceneQueryResult extends QueryResult {
 
             int postings=result.getHitCount();
     //            int postings=itemHandles.size();
-            dspaceContext.complete();
             if(log.isDebugEnabled())log.debug("'" + qArgs.getQuery() + "'==> " + postings);
         }
         catch(Exception e) {
@@ -113,6 +113,16 @@ public class LuceneQueryResult extends QueryResult {
             throw new InstantiationException(e.getMessage());
         }
     }
+
+    public void close() {
+        try {
+            dspaceContext.complete();
+        } catch (SQLException ex) {
+            log.error(ex, ex);
+        }
+        super.close();
+    }
+
 
     public long getNumberOfRecords() {
         if(result==null) // probably just holding diagnostics
