@@ -116,6 +116,7 @@ public class LuceneQueryResult extends QueryResult {
 
     public void close() {
         try {
+            if(log.isDebugEnabled())log.debug("freeing DSpace Context: " + dspaceContext);
             dspaceContext.complete();
         } catch (SQLException ex) {
             log.error(ex, ex);
