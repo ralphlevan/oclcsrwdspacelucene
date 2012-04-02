@@ -56,6 +56,8 @@ public class LuceneQueryResult extends QueryResult {
         try {
             dspaceContext=new Context();
             if(log.isDebugEnabled()) {
+                Exception e=new Exception("in LuceneQueryResult constructor called by:");
+                log.debug(e, e);
                 log.debug("dspaceContext.isValid()="+dspaceContext.isValid());
                 log.debug("getPageSize="+qArgs.getPageSize()+", getQuery="+qArgs.getQuery()+", getStart="+qArgs.getStart());
 //                new Exception().printStackTrace();
@@ -117,7 +119,8 @@ public class LuceneQueryResult extends QueryResult {
     public void close() {
         try {
             if(log.isDebugEnabled())log.debug("freeing DSpace Context: " + dspaceContext);
-            dspaceContext.complete();
+            if(dspaceContext!=null)
+                dspaceContext.complete();
         } catch (SQLException ex) {
             log.error(ex, ex);
         }
@@ -135,10 +138,10 @@ public class LuceneQueryResult extends QueryResult {
       throws InstantiationException {
         if(result==null)
             throw new InstantiationException("No results created");
-        if(startPoint==qArgs.getStart())
-            return new LuceneRecordIterator(this, startPoint, numRecs, edt);
-        qArgs.setStart((int)startPoint-1);
+        if(startPoint-1==qArgs.getStart())
+            return new LuceneRecordIterator(this, startPoint, numRecs, edt, false);
+        qArgs.setStart((int)(startPoint - 1));
         qArgs.setPageSize(numRecs);
-        return new LuceneRecordIterator(new LuceneQueryResult(qArgs), startPoint, numRecs, edt);
+        return new LuceneRecordIterator(new LuceneQueryResult(qArgs), startPoint, numRecs, edt, true);
     }
 }
