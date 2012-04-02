@@ -25,39 +25,22 @@ import ORG.oclc.os.SRW.QueryResult;
 import ORG.oclc.os.SRW.SRWDatabase;
 import ORG.oclc.os.SRW.SRWDiagnostic;
 import ORG.oclc.os.SRW.TermList;
-import gov.loc.www.zing.srw.TermTypeWhereInList;
-import gov.loc.www.zing.srw.ScanRequestType;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-import gov.loc.www.zing.srw.TermType;
-import gov.loc.www.zing.srw.TermsType;
+import gov.loc.www.zing.srw.*;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.axis.MessageContext;
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.axis.types.PositiveInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dspace.browse.BrowseEngine;
-import org.dspace.browse.BrowseException;
-import org.dspace.browse.BrowseIndex;
-import org.dspace.browse.BrowseInfo;
-import org.dspace.browse.BrowserScope;
+import org.dspace.browse.*;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.search.QueryArgs;
-import org.z3950.zing.cql.CQLAndNode;
-import org.z3950.zing.cql.CQLBooleanNode;
-import org.z3950.zing.cql.CQLNode;
-import org.z3950.zing.cql.CQLNotNode;
-import org.z3950.zing.cql.CQLOrNode;
-import org.z3950.zing.cql.CQLTermNode;
+import org.z3950.zing.cql.*;
 
 /**
  *
@@ -66,7 +49,7 @@ import org.z3950.zing.cql.CQLTermNode;
 public class SRWLuceneDatabase extends SRWDatabase {
     static Log log=LogFactory.getLog(SRWLuceneDatabase.class);
 
-    Hashtable    indexSynonyms=new Hashtable();
+    HashMap    indexSynonyms=new HashMap();
     String       luceneDirectory;
 
     public void addRenderer(String schemaName, String schemaID, Properties props)
@@ -90,7 +73,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
 
     public String getIndexInfo() {
         Enumeration     enumer=dbProperties.propertyNames();
-        Hashtable       sets=new Hashtable();
+        HashMap       sets=new HashMap();
         String          index, indexSet, prop;
         StringBuffer    sb=new StringBuffer("        <indexInfo>\n");
         StringTokenizer st;
@@ -268,7 +251,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
 
             BrowseInfo bi;
             BrowseEngine browse=new BrowseEngine(dspaceContext);
-            String[] result;
+            String[] result[];
             bi=browse.browse(scope);
             result=bi.getStringResults();
             if(log.isDebugEnabled())log.debug(bi.getTotal()+" items found");
@@ -286,7 +269,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
                         term[i].setWhereInList(TermTypeWhereInList.only);
                     else
                         term[i].setWhereInList(TermTypeWhereInList.last);
-                term[i].setValue(result[i]);
+                term[i].setValue(result[i][0]);
                 if(log.isDebugEnabled())log.debug(result[i]);
                 //term[i].setNumberOfRecords(new NonNegativeInteger("0"));
             }
@@ -344,7 +327,7 @@ public class SRWLuceneDatabase extends SRWDatabase {
                 sb.append(" NOT ");
             else if(node instanceof CQLOrNode)
                 sb.append(" OR ");
-            else sb.append(" UnknownBoolean("+cbn+") ");
+            else sb.append(" UnknownBoolean(").append(cbn).append(") ");
             makeLuceneQuery(cbn.right, sb);
             sb.append(")");
         }
@@ -385,9 +368,9 @@ public class SRWLuceneDatabase extends SRWDatabase {
                     sb.append(ctn.getTerm());
             }
             else
-                sb.append("Unsupported Relation: "+ctn.getRelation().getBase());
+                sb.append("Unsupported Relation: ").append(ctn.getRelation().getBase());
         }
-        else sb.append("UnknownCQLNode("+node+")");
+        else sb.append("UnknownCQLNode(").append(node).append(")");
     }
 
     
