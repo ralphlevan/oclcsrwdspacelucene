@@ -41,26 +41,34 @@ public class LuceneRecordIterator implements RecordIterator {
     static final Log log=LogFactory.getLog(LuceneRecordIterator.class);
     static String DCSchemaID="info:srw/schema/1/dc-v1.1";
 
+    boolean temporaryResultSet;
     ExtraDataType edt;
     int numRecs, whichRecord=0;
     long startPoint;
     LuceneQueryResult lqr;
 
     /** Creates a new instance of PearsRecordIterator */
-    public LuceneRecordIterator(LuceneQueryResult lqr, long startPoint, int numRecs, ExtraDataType edt)
+    public LuceneRecordIterator(LuceneQueryResult lqr, long startPoint, int numRecs, ExtraDataType edt, boolean temporaryResultSet)
       throws InstantiationException {
-        log.info("lqr="+lqr+", startPoint="+startPoint+", numRecs="+numRecs);
+        if(log.isInfoEnabled())
+            log.info("lqr="+lqr+", startPoint="+startPoint+", numRecs="+numRecs);
         this.lqr=lqr;
         this.startPoint=startPoint;
         this.numRecs=numRecs;
         this.edt=edt;
+        this.temporaryResultSet=temporaryResultSet;
     }
 
     public void close() {
+        if(log.isDebugEnabled())
+            log.debug("temporaryResultSet="+temporaryResultSet);
+        if(temporaryResultSet)
+            lqr.close();
     }
     
     public boolean hasNext() {
-        log.info("in hasNext: whichRecord="+whichRecord+", numRecs="+numRecs+", resultItems.length="+lqr.resultItems.length);
+        if(log.isInfoEnabled())
+            log.info("in hasNext: whichRecord="+whichRecord+", numRecs="+numRecs+", resultItems.length="+lqr.resultItems.length);
         if(whichRecord<numRecs && whichRecord<lqr.resultItems.length)
             return true;
         return false;
@@ -69,7 +77,7 @@ public class LuceneRecordIterator implements RecordIterator {
      private String makeDCRecord(DCValue[] values) {
         DCValue      value;
         StringBuffer sb=new StringBuffer();
-        sb.append("<srw_dc:dc xmlns:srw_dc=\""+DCSchemaID+"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n");
+        sb.append("<srw_dc:dc xmlns:srw_dc=\"").append(DCSchemaID).append("\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n");
         for(int i=0; i<values.length; i++) {
             value=values[i];
             sb.append("    <dc:").append(value.element);
@@ -91,7 +99,8 @@ public class LuceneRecordIterator implements RecordIterator {
     }
 
     public Record nextRecord() throws NoSuchElementException {
-        log.info("in nextRecord: lqr="+lqr+", startPoint="+startPoint+", whichRecord="+whichRecord);
+        if(log.isInfoEnabled())
+            log.info("in nextRecord: lqr="+lqr+", startPoint="+startPoint+", whichRecord="+whichRecord);
         DCValue[]    values=lqr.resultItems[(int)whichRecord].getDC(Item.ANY, Item.ANY, Item.ANY);
         whichRecord++;
         String stringRecord=makeDCRecord(values);
