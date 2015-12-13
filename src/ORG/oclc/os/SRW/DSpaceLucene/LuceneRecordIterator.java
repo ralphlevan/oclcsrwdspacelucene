@@ -28,7 +28,7 @@ import gov.loc.www.zing.srw.ExtraDataType;
 import java.util.NoSuchElementException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dspace.content.DCValue;
+import org.dspace.content.Metadatum;
 import org.dspace.content.Item;
 
 
@@ -74,8 +74,8 @@ public class LuceneRecordIterator implements RecordIterator {
         return false;
     }
 
-     private String makeDCRecord(DCValue[] values) {
-        DCValue      value;
+     private String makeDCRecord(Metadatum[] values) {
+        Metadatum      value;
         StringBuffer sb=new StringBuffer();
         sb.append("<srw_dc:dc xmlns:srw_dc=\"").append(DCSchemaID).append("\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n");
         for(int i=0; i<values.length; i++) {
@@ -101,7 +101,7 @@ public class LuceneRecordIterator implements RecordIterator {
     public Record nextRecord() throws NoSuchElementException {
         if(log.isInfoEnabled())
             log.info("in nextRecord: lqr="+lqr+", startPoint="+startPoint+", whichRecord="+whichRecord);
-        DCValue[]    values=lqr.resultItems[(int)whichRecord].getDC(Item.ANY, Item.ANY, Item.ANY);
+        Metadatum[]    values=lqr.resultItems[(int)whichRecord].getDC(Item.ANY, Item.ANY, Item.ANY);
         whichRecord++;
         String stringRecord=makeDCRecord(values);
         return new Record(stringRecord, DCSchemaID);
